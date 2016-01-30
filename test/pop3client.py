@@ -1,27 +1,33 @@
 import socket
 import sys
 
-# Create a TCP/IP socket
+if len(sys.argv) < 2:
+	print "Der Befehl muss wie folgt aufgerufen werden: pop3client.py mail@example.de"
+	sys.exit(2)
+
+email_address  = sys.argv[1]
+
+server_address = "192.168.2.122"
+port = 8889
+
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# Connect the socket to the port where the server is listening
-server_address = ('10.10.0.154', 8889)
-#print "connecting to port 8889"
-sock.connect(server_address)
+server = (server_address, port)
 
-message = "LIST pi@gmail.com"
+sock.connect(server)
+
+message = "LIST " + email_address
 sock.sendall(message)
 print "Anfrage an POP3 gestellt \n"
     
 data = sock.recv(1024)
 antwort = data.split( )
 
-
 if antwort[0]=='+OK':
-	print "Anzahl Nachrichten im Ordner: ", antwort[1]
+	print "Anzahl Nachrichten: ", antwort[1]
 
 	for i in range(int(antwort[1])):
-		message = 'RETR pi@gmail.com ' + str(i)
+		message = 'RETR ' + email_address + ' ' + str(i)
 		sock.sendall(message)
 		print "\n email wird abgerufen... \n"
 		
@@ -30,5 +36,7 @@ if antwort[0]=='+OK':
 		email = data[4:]
 		#print code
 		print "Nachricht :\n", email  
-	
+
+else:
+	print data
 sock.close()
