@@ -8,6 +8,9 @@ if len(sys.argv) < 5:
 	print "Der Befehl muss wie folgt aufgerufen werden: client.py from@example.com \"['to@example.com', '...']\" betreff \"inhalt\""
 	sys.exit(2)
 
+server_address = "192.168.2.122"
+port = 8888
+
 from_mail = sys.argv[1]
 to_mail = ast.literal_eval(sys.argv[2])
 betreff = sys.argv[3]
@@ -17,7 +20,7 @@ msg = MIMEText(inhalt)
 msg['From'] = email.utils.formataddr(('Author', from_mail))
 msg['Subject'] = betreff
 
-server = smtplib.SMTP('192.168.2.122', 8888)
+server = smtplib.SMTP(server_adress, port)
 try:
 	server.sendmail(from_mail, to_mail, msg.as_string())
 finally:
