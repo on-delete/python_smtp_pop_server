@@ -1,16 +1,24 @@
 import smtplib
 import email.utils
 from email.mime.text import MIMEText
+import sys
+import ast
 
-# Create the message
-msg = MIMEText('Heute schneit es!')
-#msg['To'] = email.utils.formataddr(('Recipient', 'pi@gmail.com'))
-msg['From'] = email.utils.formataddr(('Author', 'andre2@example.com'))
-msg['Subject'] = 'Noch eine Nachricht'
+if len(sys.argv) < 5:
+	print "Der Befehl muss wie folgt aufgerufen werden: client.py from@example.com \"['to@example.com', '...']\" betreff \"inhalt\""
+	sys.exit(2)
 
-server = smtplib.SMTP('0.0.0.0', 8888)
-server.set_debuglevel(False) # show communication with the server
+from_mail = sys.argv[1]
+to_mail = ast.literal_eval(sys.argv[2])
+betreff = sys.argv[3]
+inhalt = sys.argv[4]
+
+msg = MIMEText(inhalt)
+msg['From'] = email.utils.formataddr(('Author', from_mail))
+msg['Subject'] = betreff
+
+server = smtplib.SMTP('192.168.2.122', 8888)
 try:
-    server.sendmail('author@example.com', ['pi@gmail.com', 'pi2@gmail.com'], msg.as_string())
+	server.sendmail(from_mail, to_mail, msg.as_string())
 finally:
     server.quit()
